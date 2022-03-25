@@ -1,7 +1,10 @@
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { ICartState } from './modules/cart/types';
-import rootReducer from './modules/rootReducer';
 
+import rootReducer from './modules/rootReducer';
+import rootSaga from './modules/rootSaga'
+
+import createSagaMiddleware from 'redux-saga';
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 export interface IState {
@@ -13,10 +16,17 @@ export interface IState {
     Podemos pensar no store como o estado global do redux
 */
 
+const sagaMiddleware = createSagaMiddleware();
+
+const middleware = [sagaMiddleware];
+
 const store = createStore(
     rootReducer,
-    composeWithDevTools()
+    composeWithDevTools(
+        applyMiddleware(...middleware),
+    )
     ); // Valor inicial
 
+    sagaMiddleware.run(rootSaga);
 
 export default store;
